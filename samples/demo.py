@@ -61,7 +61,7 @@ model.load_weights(COCO_MODEL_PATH, by_name=True)
 app = Flask(__name__)
 
 @app.route('/upload_page')
-def upload_file():
+def upload_page():
    return render_template('upload_page.html')
 	
 @app.route('/uploader', methods = ['GET', 'POST'])
