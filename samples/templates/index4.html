@@ -31,6 +31,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 
+need2callbackend = true;
+downloaded_data = {};
+
 function dataURItoBlob(dataURI){
     var byteString = atob(dataURI.split(',')[1]);
     var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
@@ -308,6 +311,13 @@ function sendRequest(processedBgImg, processedImgMask) {
 
 $(function() {
   $('#upload-file-btn').click(function() {
+      // make disappear
+      if (!need2callbackend) {
+        console.log("We don't need to call the backend. Reusing data ...");
+        successFromBackend(downloaded_data);
+        return;
+      }
+      console.log("Indeed we are calling the backend");
       var form_data = new FormData($('#upload-file')[0]);
       $.ajax({
           type: 'POST',
@@ -319,7 +329,9 @@ $(function() {
           success: function(data) {
               console.log('Success!');
               console.log("data: "+ data);
+              downloaded_data = data;
               successFromBackend(data);
+              need2callbackend = false;
           },
       });
   });
