@@ -80,10 +80,6 @@ def build_model():
     model.load_weights(COCO_MODEL_PATH, by_name=True)
     return model
 
-if __name__ == '__main__':
-    #interesting ...
-    model = None
-
 app = Flask(__name__)
 USER_IMG_DIR = "user_imgs/"
 
@@ -153,9 +149,12 @@ def upload_file():
         get_masks(ofname)
         return 'file uploaded successfully'
 		
-if __name__ == '__main__':
+@app.before_first_request
+def load_global_data():
+    global model
     model = build_model()
 
+if __name__ == '__main__':
     # use_reloader on makes us load the model twice (this is slow and bad)
     app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
 '''
