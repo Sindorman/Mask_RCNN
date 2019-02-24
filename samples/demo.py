@@ -68,6 +68,8 @@ USER_IMG_DIR = "user_imgs/"
 class MaskGenerator():
     def __init__(self):
         self.membervar = 5
+        app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
+
 
     @app.route('/upload_page')
     def upload_page(self):
@@ -89,8 +91,7 @@ if __name__ == '__main__':
     #model = build_model()
 
     # use_reloader on makes us load the model twice (this is slow and bad)
-    app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
-
+    maskGenerator = MaskGenerator()
 '''
 
 # COCO Class names
