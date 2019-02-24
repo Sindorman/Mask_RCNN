@@ -48,19 +48,11 @@ config = InferenceConfig()
 config.display()
 
 
-
-
-
-
-
 # Create model object in inference mode.
 model = modellib.MaskRCNN(mode="inference", model_dir=MODEL_DIR, config=config)
 
 # Load weights trained on MS-COCO
 model.load_weights(COCO_MODEL_PATH, by_name=True)
-
-
-
 
 
 # COCO Class names
@@ -100,4 +92,4 @@ print("rois (shape={}): {}".format(r['rois'].shape, r['rois']))
 print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
 print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
 print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
-print("STATIC class_names (shape={}): {}".format(class_names.shape, class_names))
+print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
