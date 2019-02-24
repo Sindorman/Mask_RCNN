@@ -12,6 +12,7 @@ import numpy as np
 import skimage.io
 import matplotlib
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 from flask import Flask, render_template, request
 from werkzeug import secure_filename
@@ -94,7 +95,8 @@ def get_masks(ifname):
     # Run detection
     print("detecting objects...")
     start_time = time()
-    results = model.detect([image], verbose=1)
+    with graph.as_default():
+        results = model.detect([image], verbose=1)
     end_time = time()
     secs_elapsed = end_time - start_time
     print("detection took {:0.2f} seconds.".format(secs_elapsed))
@@ -153,6 +155,9 @@ def upload_file():
 def load_global_data():
     global model
     model = build_model()
+
+    global graph
+    graph = tf.get_default_graph() 
 
 if __name__ == '__main__':
     # use_reloader on makes us load the model twice (this is slow and bad)
