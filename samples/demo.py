@@ -106,9 +106,9 @@ def get_masks(ifname):
     print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
     print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
 
-@app.route('/upload_page')
+@app.route('/')
 def upload_page():
-    print("/upload_page called in A CLASS")
+    print("/upload_page called")
     return render_template('upload_page.html')
     
 @app.route('/uploader', methods = ['POST'])
