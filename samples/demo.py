@@ -64,19 +64,22 @@ app = Flask(__name__)
 
 @app.route('/upload_page')
 def upload_page():
+    print("/upload_page called")
     return render_template('upload_page.html')
 	
-@app.route('/uploader', methods = ['GET', 'POST'])
+@app.route('/uploader', methods = ['POST'])
 def upload_file():
+    print("/uploader called")
     if request.method == 'POST':
         f = request.files['file']
         f.save(secure_filename(f.filename))
         return 'file uploaded successfully'
 		
 if __name__ == '__main__':
-    model = build_model()
+    #model = build_model()
+    
     # use_reloader on makes us load the model twice (this is slow and bad)
-    app.run(debug = True, use_reloader=False)
+    app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
 
 '''
 
