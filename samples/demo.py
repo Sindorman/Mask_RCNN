@@ -14,7 +14,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from werkzeug import secure_filename
 
 # COCO Class names
@@ -105,6 +105,7 @@ def get_masks(ifname):
     print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
     print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
     print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
+    return r['rois'], r['masks'], r['class_ids'], r['scores'], class_names
 
 @app.route('/')
 def upload_page():
@@ -121,8 +122,15 @@ def upload_file():
         print("writing to file '{}' ...".format(ofname))
         f.save(ofname)
 
-        get_masks(ofname)
-        return 'file uploaded successfully'
+        rois, masks, class_ids, scores, class_names = get_masks(ofname)
+        ret_dict = {
+            'rois': rois,
+            'masks':masks,
+            'class_ids':class_ids,
+            'scores':scores,
+            'class_names': class_names
+        }
+        return jsonify(ret_dict)
 
 
 if __name__ == '__main__':
