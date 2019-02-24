@@ -13,6 +13,7 @@
   </fieldset>
 </form>
 <canvas id="imageCanvas" onclick="storeCanvasClick(event)"></canvas>
+<canvas id="nvidiaCanvas"></canvas>
 
 
 <img id="userImg"></img>
@@ -284,11 +285,21 @@ function sendRequest(processedBgImg, processedImgMask) {
       body: data
     }).then((response) => response.json())
       .then((body) => {
-        console.log("body.formattedResultImageUrl: " + body.formattedResultImageUrl)
-        console.log("body.requestId: " + body.requestId)
-        //self.props.setResultImage(body.formattedResultImageUrl)
-        //self.props.setRequestId(body.requestId)
-        //self.props.setRequestComplete(true)
+        console.log("body.formattedResultImageUrl: " + body.formattedResultImageUrl);
+        console.log("body.requestId: " + body.requestId);
+        var bgImgCanvas = document.getElementById('imageCanvas')
+        var nvidiaCanvas = document.getElementById('nvidiaCanvas');
+        var nvidiaCanvasCtx = nvidiaCanvas.getContext('2d');
+        var img = new Image;
+        img.onload = function(){
+          nvidiaCanvas.width = bgImgCanvas.width;
+          nvidiaCanvas.height = bgImgCanvas.height;
+          nvidiaCanvas.style.position = "absolute";
+          nvidiaCanvas.style.top = bgImgCanvas.style.top;
+          nvidiaCanvas.style.left = bgImgCanvas.style.left + bgImgCanvas.width + 10;
+          nvidiaCanvasCtx.drawImage(img,0,0); // Or at whatever offset you like
+        };
+        img.src = body.formattedResultImageUrl;
       });
       
 }
