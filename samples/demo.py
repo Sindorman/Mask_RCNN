@@ -85,38 +85,13 @@ app = Flask(__name__)
 USER_IMG_DIR = "user_imgs/"
 
 def get_masks(ifname):
-    ROOT_DIR = os.path.abspath("../")
-    IMAGE_DIR = os.path.join(ROOT_DIR, "images")
-
-    file_names = next(os.walk(IMAGE_DIR))[2]
-    image = skimage.io.imread(os.path.join(IMAGE_DIR, random.choice(file_names)))
+    image = skimage.io.imread(ifname)
 
     # Run detection
     print("detecting objects...")
     start_time = time()
     with graph.as_default():
         results = model.detect([image], verbose=1)
-    end_time = time()
-    secs_elapsed = end_time - start_time
-    print("detection took {:0.2f} seconds.".format(secs_elapsed))
-
-    # Visualize results
-    r = results[0]
-    #visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
-    #                            class_names, r['scores'])
-
-    print("rois (shape={}): {}".format(r['rois'].shape, r['rois']))
-    print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
-    print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
-    print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
-    print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
-    '''
-    image = skimage.io.imread(ifname)
-
-    # Run detection
-    print("detecting objects...")
-    start_time = time()
-    results = model.detect([image], verbose=1)
     end_time = time()
     secs_elapsed = end_time - start_time
     print("detection took {:0.2f} seconds.".format(secs_elapsed))
@@ -130,7 +105,6 @@ def get_masks(ifname):
     print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
     print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
     print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
-    '''
 
 @app.route('/upload_page')
 def upload_page():
