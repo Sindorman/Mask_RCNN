@@ -11,6 +11,9 @@ import skimage.io
 import matplotlib
 import matplotlib.pyplot as plt
 
+from flask import Flask, render_template, request
+from werkzeug import secure_filename
+
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
 
@@ -54,6 +57,24 @@ model = modellib.MaskRCNN(mode="inference", model_dir=MODEL_DIR, config=config)
 print("Loading weights for model...")
 model.load_weights(COCO_MODEL_PATH, by_name=True)
 
+
+app = Flask(__name__)
+
+@app.route('/upload_page')
+def upload_file():
+   return render_template('upload_page.html')
+	
+@app.route('/uploader', methods = ['GET', 'POST'])
+def upload_file():
+   if request.method == 'POST':
+      f = request.files['file']
+      f.save(secure_filename(f.filename))
+      return 'file uploaded successfully'
+		
+if __name__ == '__main__':
+   app.run(debug = True)
+
+'''
 
 # COCO Class names
 # Index of the class in the list is its ID. For example, to get ID of
@@ -99,3 +120,4 @@ print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
 print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
 print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
 
+'''
