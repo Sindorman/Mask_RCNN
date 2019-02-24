@@ -20,6 +20,7 @@ from PIL import Image
 
 from flask import Flask, render_template, request, jsonify
 from werkzeug import secure_filename
+from scipy.ndimage.morphology import binary_dilation
 
 # COCO Class names
 # Index of the class in the list is its ID. For example, to get ID of
@@ -108,6 +109,11 @@ def get_masks(ifname):
     r = results[0]
     #visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
     #                        class_names, r['scores'])
+    NUM_DILATIONS = 10
+    print("dilating masks {} time(s)...".format(NUM_DILATIONS))
+    masks = r['masks']
+    for i in range(r['scores'].shape[0]):
+        masks[:, :, i] = binary_dilation(masks[:, :, i], iterations=NUM_DILATIONS).astype(masks.dtype)
 
     print("rois (shape={}): {}".format(r['rois'].shape, r['rois']))
     print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
