@@ -96,8 +96,8 @@ r = results[0]
 visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
                             class_names, r['scores'])
 
-print("rois:", r['rois'])
-print("masks:", r['masks'])
-print("class_ids:", r['class_ids'])
-print("scores:", r['scores'])
-print("STATIC class_names:", class_names)
+print("rois (shape={}): {}".format(r['rois'].shape, r['rois']))
+print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
+print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
+print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
+print("STATIC class_names (shape={}): {}".format(class_names.shape, class_names))
