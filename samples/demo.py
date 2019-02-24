@@ -129,6 +129,9 @@ def upload_file():
 if __name__ == '__main__':
     model = build_model()
 
+    ROOT_DIR = os.path.abspath("../")
+    IMAGE_DIR = os.path.join(ROOT_DIR, "images")
+
     file_names = next(os.walk(IMAGE_DIR))[2]
     image = skimage.io.imread(os.path.join(IMAGE_DIR, random.choice(file_names)))
 
