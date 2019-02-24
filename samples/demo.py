@@ -145,8 +145,8 @@ if __name__ == '__main__':
 
     # Visualize results
     r = results[0]
-    visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
-                                class_names, r['scores'])
+    #visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
+    #                            class_names, r['scores'])
 
     print("rois (shape={}): {}".format(r['rois'].shape, r['rois']))
     print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
