@@ -158,7 +158,6 @@ if __name__ == '__main__':
     # use_reloader on makes us load the model twice (this is slow and bad)
     app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
 '''
-
 # COCO Class names
 # Index of the class in the list is its ID. For example, to get ID of
 # the teddy bear class, use: class_names.index('teddy bear')
