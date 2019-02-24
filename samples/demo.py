@@ -85,7 +85,6 @@ app = Flask(__name__)
 USER_IMG_DIR = "user_imgs/"
 
 def get_masks(ifname):
-    global model
     ROOT_DIR = os.path.abspath("../")
     IMAGE_DIR = os.path.join(ROOT_DIR, "images")
 
@@ -153,12 +152,14 @@ def upload_file():
 		
 @app.before_first_request
 def load_global_data():
-    global model
     model = build_model()
     global graph
     graph = tf.get_default_graph() 
 
 if __name__ == '__main__':
+    model = build_model()
+    global graph
+    graph = tf.get_default_graph() 
     # use_reloader on makes us load the model twice (this is slow and bad)
     app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
 '''
