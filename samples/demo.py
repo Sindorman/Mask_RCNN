@@ -88,7 +88,7 @@ USER_IMG_DIR = "user_imgs/"
 def get_masks(ifname):
     image = skimage.io.imread(ifname)
     print("image.shape before resize:", image.shape)
-    image = resize(image, (512,512))
+    image = resize(image, (512,512,image.shape[2]))
     print("image.shape after resize:", image.shape)
 
     # Run detection
