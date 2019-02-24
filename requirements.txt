@@ -13,3 +13,4 @@ imgaug
 IPython[all]
 flask
 werkzeug
+pycocotools
