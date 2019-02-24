@@ -124,11 +124,11 @@ def upload_file():
 
         rois, masks, class_ids, scores, class_names = get_masks(ofname)
         ret_dict = {
-            'rois': rois,
-            'masks':masks,
-            'class_ids':class_ids,
-            'scores':scores,
-            'class_names': class_names
+            'rois': rois.tolist(),
+            'masks':masks.tolist(),
+            'class_ids':class_ids.tolist(),
+            'scores':scores.tolist(),
+            'class_names': class_names.tolist()
         }
         return jsonify(ret_dict)
 
