@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color:#5FC0CE">
+<!--<button onClick="successFromBackend();">Call nvidia with canvas</button>-->
+<button  onClick="makeDisappear();">Make disappear</button>
+<label>Image File:</label><br/>
+<input type="file" id="imageLoader" name="imageLoader" accept=".jpg, .jpeg, .png"/>
+<br>
+<canvas id="imageCanvas" onclick="storeCanvasClick(event)"></canvas>
+
+
+<img id="userImg"></img>
+
+<br>
+<p> debug mask canvas </p>
+<canvas id="debugMaskCanvas"></canvas>
+<svg height="100px" width="100px" style="position:absolute; stroke: red;" viewBox="0 0 100 100" id="svg_mouse_indicator">
+  <circle cx="50" cy="50" r="45" fill="none" stroke-width="7.5"></circle>
+  <line x1="32.5" y1="50" x2="67.5" y2="50" stroke-width="5"></line>
+  <line x1="50" y1="32.5" x2="50" y2="67.5" stroke-width="5"></line>
+</svg>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+
+function dataURItoBlob(dataURI){
+    var byteString = atob(dataURI.split(',')[1]);
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    var blob = new Blob([ab], { type: mimeString });
+    return blob;
+}
+/*
+function callNvidia(bgImgCanvas, maskCanvas) {
+    //var bgImgCanvas = document.getElementById('imageCanvas');
+    var bgImgCtx = bgImgCanvas.getContext('2d');
+    console.log("user img height: " + bgImgCanvas.height);
+    console.log("user img width: " + bgImgCanvas.width);
+    if (bgImgCanvas.height != bgImgCanvas.width) {
+        console.error("Bg img is not square");
+        return;
+    }
+    const bgImgAsURL = bgImgCanvas.toDataURL();
+    console.log("bgImgAsURL (below)");
+    console.log(bgImgAsURL);
+
+    
+    //var maskCanvas = document.createElement('canvas');
+    //var maskCanvas = document.getElementById('debugMaskCanvas');
+    maskCanvas.width = bgImgCanvas.width;
+    maskCanvas.height = bgImgCanvas.height;
+
+    var maskCtx = maskCanvas.getContext("2d");
+    // reset canvas
+    maskCtx.fillStyle = "rgba(255, 255, 255, 1)";
+    maskCtx.fillRect(0, 0, bgImgCanvas.width, bgImgCanvas.height); // x, y
+
+    // draw rectangle
+    maskCtx.clearRect(24, 165, 63-24, bgImgCanvas.height - 165 - 1);
+    //maskCtx.fillStyle = "rgba(255, 255, 255, 0)";
+    //maskCtx.fillRect(350, 350, 50, 50); // x, y
+    const maskAsURL = maskCanvas.toDataURL();
+    sendRequest(bgImgAsURL, maskAsURL);
+}
+*/
+
+function sendRequest(processedBgImg, processedImgMask) {
+    console.log("sendRequest(): processedBgImg.length == " + processedBgImg.length);
+    console.log("sendRequest(): processedImgMask.length == " + processedImgMask.length);
+    var data = new FormData();
+    data.append('original-image-file', this.dataURItoBlob(processedBgImg));
+    data.append('masked-image-file', this.dataURItoBlob(processedImgMask));
+    var nvidiaEndpointURL = "https://inf.ngc.nvidia.com/v1/partialconv/inpainting";
+    // "http://52.26.183.137:8080/v1/partialconv/inpainting"
+    //console.error("not calling nvidia since in dev");
+    //return;
+    fetch(nvidiaEndpointURL, {
+      method: 'POST',
+      body: data
+    }).then((response) => response.json())
+      .then((body) => {
+        console.log("body.formattedResultImageUrl: " + body.formattedResultImageUrl)
+        console.log("body.requestId: " + body.requestId)
+        //self.props.setResultImage(body.formattedResultImageUrl)
+        //self.props.setRequestId(body.requestId)
+        //self.props.setRequestComplete(true)
+      });
+      
+}
+
+/*
+// <input type="file"> 
+$("input").change(function(e) {
+
+    for (var i = 0; i < e.originalEvent.srcElement.files.length; i++) {
+        
+        var file = e.originalEvent.srcElement.files[i];
+        
+        var img = document.getElementById("userImg");
+        var reader = new FileReader();
+        reader.onloadend = function() {
+            img.src = reader.result;
+        }
+        reader.readAsDataURL(file);
+        $("input").after(img);
+        break;
+    }
+});
+*/
+
+canvas_click_coord_x = -1;
+canvas_click_coord_y = -1;
+
+function storeCanvasClick(event) {
+    canvas_click_coord_x = event.offsetX;
+    canvas_click_coord_y = event.offsetY;
+    if (canvas_click_coord_x < 0 || canvas_click_coord_y < 0) {
+      console.log("first canvas click");
+      
+    }
+    var imgCanvas = document.getElementById('imageCanvas');
+    const rect = imgCanvas.getBoundingClientRect();
+    /*return {
+      left: rect.left + window.scrollX,
+      top: rect.top + window.scrollY
+    };*/
+    var svg = document.getElementById('svg_mouse_indicator');
+    var x = event.offsetX + rect.left - 100/2;
+    var y = event.offsetY + rect.top - 100/2;
+    svg.style.left = x;
+    svg.style.top = y;
+    
+    console.log("x coords: " + canvas_click_coord_x + ", y coords: " + canvas_click_coord_y);
+}
+
+var imageLoader = document.getElementById('imageLoader');
+    imageLoader.addEventListener('change', handleImage, false);
+
+var userFile;
+
+function handleImage(e){
+    var canvas = document.getElementById('imageCanvas');
+    var ctx = canvas.getContext('2d');
+
+    var reader = new FileReader();
+    reader.onload = function(event){
+        var img = new Image();
+        img.onload = function(){
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img,0,0);
+        }
+        img.src = event.target.result;
+    }
+    userFile = e.target.files[0];
+    reader.readAsDataURL(userFile);
+}
+
+function dataURItoBlob(dataURI){
+    var byteString = atob(dataURI.split(',')[1]);
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    var blob = new Blob([ab], { type: mimeString });
+    return blob;
+}
+
+function genMaskAsURL(dataDict, width, height) {
+  
+
+  //var maskCanvas = document.createElement('canvas');
+  var maskCanvas = document.getElementById('debugMaskCanvas');
+  maskCanvas.width = width;
+  maskCanvas.height = height;
+
+  var maskCtx = maskCanvas.getContext("2d");
+  // reset canvas
+  maskCtx.fillStyle = "rgba(255, 255, 255, 1)";
+  maskCtx.fillRect(0, 0, width, height); // x, y
+
+  // draw rectangle
+  //maskCtx.fillStyle = "rgba(255, 255, 255, 0)";
+  //maskCtx.fillRect(350, 350, 50, 50); // x, y
+
+  masks = dataDict["masks"];
+
+  // find the object at the cursor location
+  var members_at_cursor = masks[canvas_click_coord_y][canvas_click_coord_x];
+  console.log("members_at_cursor.length: "+ members_at_cursor.length);
+  console.log("members_at_cursor: "+ members_at_cursor);
+  //members_at_cursor = [0,1,0,0];
+
+  if (members_at_cursor.length == 0) {
+    console.error("no objects detected in image");
+    return ;
+  }
+  
+  
+  
+  var i;
+  for (i=0; i<members_at_cursor.length; i++) {
+    if (members_at_cursor[i] == 1) {
+      break;
+    }
+  }
+  if (i == members_at_cursor.length) {
+    // fail
+    console.error("failed to find member at cursor");
+    return;
+  }
+  class_ids = dataDict["class_ids"];
+  class_id = class_ids[i];
+  console.log("class_id: "+class_id);
+
+  class_names = dataDict["class_names"];
+  class_name = class_names[class_id];
+  console.log("class_name: "+class_name);
+
+  scores = dataDict["scores"];
+  score = scores[i];
+  console.log("confidence score: "+score);
+
+  for (var y=0; y<masks.length; y++) {
+    for (var x=0; x<masks[y].length; x++) {
+      members = masks[y][x];
+       if (members[i] == 1) {
+        maskCtx.clearRect(x, y, 1, 1); 
+      }
+    }
+  }
+  var maskAsURL = maskCanvas.toDataURL();
+  return maskAsURL;
+}
+
+function successFromBackend(dataDict) {
+
+  console.log("successfully received data from backend");
+  callNvidia(dataDict);
+}
+
+function callNvidia(dataDict) {
+    console.log("callNvidia()");
+    var bgImgCanvas = document.getElementById('imageCanvas');
+    var bgImgCtx = bgImgCanvas.getContext('2d');
+    console.log("user img height: " + bgImgCanvas.height);
+    console.log("user img width: " + bgImgCanvas.width);
+    if (bgImgCanvas.height != bgImgCanvas.width) {
+        console.error("Bg img is not square");
+        return;
+    }
+    const bgImgAsURL = bgImgCanvas.toDataURL();
+    console.log("bgImgAsURL (below)");
+    console.log(bgImgAsURL);
+
+    maskAsURL = genMaskAsURL(dataDict, bgImgCanvas.width, bgImgCanvas.height);
+    
+    sendRequest(bgImgAsURL, maskAsURL);
+}
+
+function sendRequest(processedBgImg, processedImgMask) {
+    console.log("sendRequest(): processedBgImg.length == " + processedBgImg.length);
+    console.log("sendRequest(): processedImgMask.length == " + processedImgMask.length);
+    var data = new FormData();
+    data.append('original-image-file', this.dataURItoBlob(processedBgImg));
+    data.append('masked-image-file', this.dataURItoBlob(processedImgMask));
+    var nvidiaEndpointURL = "https://inf.ngc.nvidia.com/v1/partialconv/inpainting";
+    // "http://52.26.183.137:8080/v1/partialconv/inpainting"
+    //console.error("not calling nvidia since in dev");
+    //return;
+    fetch(nvidiaEndpointURL, {
+      method: 'POST',
+      body: data
+    }).then((response) => response.json())
+      .then((body) => {
+        console.log("body.formattedResultImageUrl: " + body.formattedResultImageUrl)
+        console.log("body.requestId: " + body.requestId)
+        //self.props.setResultImage(body.formattedResultImageUrl)
+        //self.props.setRequestId(body.requestId)
+        //self.props.setRequestComplete(true)
+      });
+      
+}
+
+function makeDisappear() {
+    var form_data = new FormData(userFile);
+    $.ajax({
+        type: 'POST',
+        url: 'http://35.197.17.183/uploader',
+        data: form_data,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(data) {
+            console.log('Success!');
+            console.log("data: "+ data);
+            successFromBackend(data);
+        },
+    });
+}
+
+/*
+    $.ajax({
+        url : "http://52.26.183.137:8080/v1/partialconv/inpainting",
+        type : 'POST',
+        data : data,
+        contentType: false,
+        processData: false,
+        success : function(data) {              
+            console.log('Success! Data: '+data);
+        },
+        error : function(request,error)
+        {
+            console.log("Request: "+JSON.stringify(request));
+            console.log("Error: "+JSON.stringify(error));
+        }
+    });*/
+
+/*
+// Process and save the mask to create one for the inference model.
+this.clearCanvas()
+    this.ctxMask.fillStyle = '#FFF'
+    this.ctxMask.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
+    this.redrawCanvas('#000')
+    const processedImageMask = this.canvasMask.toDataURL()
+    this.props.setProcessedImageMask(processedImageMask)
+
+    // Send the request.
+    this.sendRequest(processedImageMask)
+    this.openModal();
+  }
+
+  sendRequest = (processedImageMask) => {
+    var self = this
+    var data = new FormData()
+    data.append('original-image-file', this.dataURItoBlob(this.props.selectedImage))
+    data.append('masked-image-file', this.dataURItoBlob(processedImageMask))
+    fetch(`${process.env.REACT_APP_SERVICE_ENDPOINT || 'http://52.26.183.137:8080'}/v1/partialconv/inpainting`, {
+      method: 'POST',
+      body: data
+    }).then((response) => response.json())
+      .then((body) => {
+        self.props.setResultImage(body.formattedResultImageUrl)
+        self.props.setRequestId(body.requestId)
+        self.props.setRequestComplete(true)
+      })
+  }
+*/
+</script>
+
+</body>
+</html>
+

@@ -110,7 +110,7 @@ def get_masks(ifname):
 @app.route('/')
 def upload_page():
     print("/upload_page called")
-    return render_template('upload_page.html')
+    return render_template('index4.html')
     
 @app.route('/uploader', methods = ['POST'])
 def upload_file():
