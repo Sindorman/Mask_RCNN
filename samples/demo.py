@@ -10,6 +10,7 @@ import uuid
 
 import numpy as np
 import skimage.io
+from skimage.transform import resize
 import matplotlib
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -86,6 +87,9 @@ USER_IMG_DIR = "user_imgs/"
 
 def get_masks(ifname):
     image = skimage.io.imread(ifname)
+    print("image.shape before resize:", image.shape)
+    image = resize(image, (512,512))
+    print("image.shape after resize:", image.shape)
 
     # Run detection
     print("detecting objects...")
