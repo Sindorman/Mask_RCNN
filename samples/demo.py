@@ -94,6 +94,8 @@ def get_masks(ifname):
     img = img.resize((512,512))
     print("image.shape after resize:", img.size)
 
+    img = np.array(img)
+
     # Run detection
     print("detecting objects...")
     start_time = time()
