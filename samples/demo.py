@@ -88,6 +88,7 @@ app = Flask(__name__)
 USER_IMG_DIR = "user_imgs/"
 
 def get_masks(ifname):
+    global model
     ROOT_DIR = os.path.abspath("../")
     IMAGE_DIR = os.path.join(ROOT_DIR, "images")
 
