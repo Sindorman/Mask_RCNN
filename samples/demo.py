@@ -88,47 +88,6 @@ app = Flask(__name__)
 USER_IMG_DIR = "user_imgs/"
 
 def get_masks(ifname):
-    image = skimage.io.imread(ifname)
-
-    # Run detection
-    print("detecting objects...")
-    start_time = time()
-    results = model.detect([image], verbose=1)
-    end_time = time()
-    secs_elapsed = end_time - start_time
-    print("detection took {:0.2f} seconds.".format(secs_elapsed))
-
-    r = results[0]
-    #visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
-    #                        class_names, r['scores'])
-
-    print("rois (shape={}): {}".format(r['rois'].shape, r['rois']))
-    print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
-    print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
-    print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
-    print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
-
-@app.route('/upload_page')
-def upload_page():
-    print("/upload_page called in A CLASS")
-    return render_template('upload_page.html')
-    
-@app.route('/uploader', methods = ['POST'])
-def upload_file():
-    print("/uploader called")
-    if request.method == 'POST':
-        f = request.files['file']
-        rand_uuid = uuid.uuid4().hex
-        ofname = path.join(USER_IMG_DIR, rand_uuid + "_" + secure_filename(f.filename))
-        print("writing to file '{}' ...".format(ofname))
-        f.save(ofname)
-
-        get_masks(ofname)
-        return 'file uploaded successfully'
-		
-if __name__ == '__main__':
-    model = build_model()
-
     ROOT_DIR = os.path.abspath("../")
     IMAGE_DIR = os.path.join(ROOT_DIR, "images")
 
@@ -153,6 +112,48 @@ if __name__ == '__main__':
     print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
     print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
     print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
+    '''
+    image = skimage.io.imread(ifname)
+
+    # Run detection
+    print("detecting objects...")
+    start_time = time()
+    results = model.detect([image], verbose=1)
+    end_time = time()
+    secs_elapsed = end_time - start_time
+    print("detection took {:0.2f} seconds.".format(secs_elapsed))
+
+    r = results[0]
+    #visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
+    #                        class_names, r['scores'])
+
+    print("rois (shape={}): {}".format(r['rois'].shape, r['rois']))
+    print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
+    print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
+    print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
+    print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
+    '''
+
+@app.route('/upload_page')
+def upload_page():
+    print("/upload_page called in A CLASS")
+    return render_template('upload_page.html')
+    
+@app.route('/uploader', methods = ['POST'])
+def upload_file():
+    print("/uploader called")
+    if request.method == 'POST':
+        f = request.files['file']
+        rand_uuid = uuid.uuid4().hex
+        ofname = path.join(USER_IMG_DIR, rand_uuid + "_" + secure_filename(f.filename))
+        print("writing to file '{}' ...".format(ofname))
+        f.save(ofname)
+
+        get_masks(ofname)
+        return 'file uploaded successfully'
+		
+if __name__ == '__main__':
+    model = build_model()
 
     # use_reloader on makes us load the model twice (this is slow and bad)
     app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
