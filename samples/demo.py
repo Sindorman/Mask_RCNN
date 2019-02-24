@@ -155,7 +155,6 @@ def upload_file():
 def load_global_data():
     global model
     model = build_model()
-
     global graph
     graph = tf.get_default_graph() 
 
