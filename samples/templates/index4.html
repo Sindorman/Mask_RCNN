@@ -140,7 +140,6 @@ function storeCanvasClick(event) {
 var imageLoader = document.getElementById('imageLoader');
     imageLoader.addEventListener('change', handleImage, false);
 
-var userFile;
 
 function handleImage(e){
     var canvas = document.getElementById('imageCanvas');
@@ -156,7 +155,7 @@ function handleImage(e){
         }
         img.src = event.target.result;
     }
-    userFile = e.target.files[0];
+    var userFile = e.target.files[0];
     reader.readAsDataURL(userFile);
 }
 
@@ -289,7 +288,10 @@ function sendRequest(processedBgImg, processedImgMask) {
 }
 
 function makeDisappear() {
-    var form_data = new FormData(userFile);
+    var inputFileEl = document.getElementById("imageLoader");
+    var file = inputFileEl.files[0];
+    var form_data = new FormData(file);
+
     $.ajax({
         type: 'POST',
         url: 'http://35.197.17.183/uploader',
