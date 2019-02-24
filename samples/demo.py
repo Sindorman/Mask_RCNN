@@ -5,6 +5,8 @@ import sys
 import random
 import math
 from time import time
+from os import path
+import uuid
 
 import numpy as np
 import skimage.io
@@ -61,6 +63,7 @@ def build_model():
 
 
 app = Flask(__name__)
+USER_IMG_DIR = "user_imgs/"
 
 @app.route('/upload_page')
 def upload_page():
@@ -72,12 +75,15 @@ def upload_file():
     print("/uploader called")
     if request.method == 'POST':
         f = request.files['file']
-        f.save(secure_filename(f.filename))
+        rand_uuid = uuid.uuid4().hex
+        ofname = path.join(USER_IMG_DIR, rand_uuid + secure_filename(f.filename))
+        print("writing to file '{}' ...".format(ofname))
+        f.save(ofname)
         return 'file uploaded successfully'
 		
 if __name__ == '__main__':
     #model = build_model()
-    
+
     # use_reloader on makes us load the model twice (this is slow and bad)
     app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
 
