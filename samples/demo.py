@@ -90,9 +90,9 @@ USER_IMG_DIR = "user_imgs/"
 
 def get_masks(ifname):
     img = Image.open(ifname)
-    print("image.shape before resize:", img.shape)
+    print("image.shape before resize:", img.size)
     img = img.resize((512,512))
-    print("image.shape after resize:", img.shape)
+    print("image.shape after resize:", img.size)
 
     # Run detection
     print("detecting objects...")
