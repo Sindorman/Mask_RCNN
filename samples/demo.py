@@ -65,21 +65,25 @@ def build_model():
 app = Flask(__name__)
 USER_IMG_DIR = "user_imgs/"
 
-@app.route('/upload_page')
-def upload_page():
-    print("/upload_page called")
-    return render_template('upload_page.html')
-	
-@app.route('/uploader', methods = ['POST'])
-def upload_file():
-    print("/uploader called")
-    if request.method == 'POST':
-        f = request.files['file']
-        rand_uuid = uuid.uuid4().hex
-        ofname = path.join(USER_IMG_DIR, rand_uuid + secure_filename(f.filename))
-        print("writing to file '{}' ...".format(ofname))
-        f.save(ofname)
-        return 'file uploaded successfully'
+class MaskGenerator():
+    def __init__(self):
+        self.membervar = 5
+
+    @app.route('/upload_page')
+    def upload_page(self):
+        print("/upload_page called in A CLASS")
+        return render_template('upload_page.html')
+        
+    @app.route('/uploader', methods = ['POST'])
+    def upload_file(self):
+        print("/uploader called")
+        if request.method == 'POST':
+            f = request.files['file']
+            rand_uuid = uuid.uuid4().hex
+            ofname = path.join(USER_IMG_DIR, rand_uuid + "_" + secure_filename(f.filename))
+            print("writing to file '{}' ...".format(ofname))
+            f.save(ofname)
+            return 'file uploaded successfully'
 		
 if __name__ == '__main__':
     #model = build_model()
