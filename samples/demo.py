@@ -10,10 +10,11 @@ import uuid
 
 import numpy as np
 import skimage.io
-from skimage.transform import resize
+#from skimage.transform import resize
 import matplotlib
 import matplotlib.pyplot as plt
 import tensorflow as tf
+from scipy import misc
 
 from flask import Flask, render_template, request, jsonify
 from werkzeug import secure_filename
@@ -88,7 +89,7 @@ USER_IMG_DIR = "user_imgs/"
 def get_masks(ifname):
     image = skimage.io.imread(ifname)
     print("image.shape before resize:", image.shape)
-    image = resize(image, (512,512,image.shape[2]))
+    image = misc.resize(image, (512,512))
     print("image.shape after resize:", image.shape)
 
     # Run detection
