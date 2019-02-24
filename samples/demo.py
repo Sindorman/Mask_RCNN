@@ -75,7 +75,8 @@ def upload_file():
 		
 if __name__ == '__main__':
     model = build_model()
-    app.run(debug = True)
+    # use_reloader on makes us load the model twice (this is slow and bad)
+    app.run(debug = True, use_reloader=False)
 
 '''
 
