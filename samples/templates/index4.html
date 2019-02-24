@@ -9,7 +9,7 @@
       <input name="file" type="file" id="goodFileInputter">
   </fieldset>
   <fieldset>
-      <button id="upload-file-btn" type="button">Upload</button>
+      <button id="upload-file-btn" type="button">Make disappear</button>
   </fieldset>
 </form>
 <canvas id="imageCanvas" onclick="storeCanvasClick(event)"></canvas>
@@ -155,9 +155,11 @@ function handleImage(e){
     reader.onload = function(event){
         var img = new Image();
         img.onload = function(){
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img,0,0);
+            var nvidiaImgWidth = 512;
+            canvas.width = nvidiaImgWidth;
+            canvas.height = nvidiaImgWidth;
+            ctx.drawImage(img, 0, 0, img.width,    img.height,     // source rectangle
+                               0, 0, canvas.width, canvas.height); // destination rectangle
         }
         img.src = event.target.result;
     }
