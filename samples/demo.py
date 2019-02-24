@@ -14,7 +14,9 @@ import skimage.io
 import matplotlib
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from scipy import misc
+#from scipy import misc
+from PIL import Image
+
 
 from flask import Flask, render_template, request, jsonify
 from werkzeug import secure_filename
@@ -87,16 +89,16 @@ app = Flask(__name__)
 USER_IMG_DIR = "user_imgs/"
 
 def get_masks(ifname):
-    image = skimage.io.imread(ifname)
-    print("image.shape before resize:", image.shape)
-    image = misc.resize(image, (512,512))
-    print("image.shape after resize:", image.shape)
+    img = Image.open(ifname)
+    print("image.shape before resize:", img.shape)
+    img = img.resize((512,512))
+    print("image.shape after resize:", img.shape)
 
     # Run detection
     print("detecting objects...")
     start_time = time()
     with graph.as_default():
-        results = model.detect([image], verbose=1)
+        results = model.detect([img], verbose=1)
     end_time = time()
     secs_elapsed = end_time - start_time
     print("detection took {:0.2f} seconds.".format(secs_elapsed))
