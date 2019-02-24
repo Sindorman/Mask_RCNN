@@ -129,6 +129,28 @@ def upload_file():
 if __name__ == '__main__':
     model = build_model()
 
+    file_names = next(os.walk(IMAGE_DIR))[2]
+    image = skimage.io.imread(os.path.join(IMAGE_DIR, random.choice(file_names)))
+
+    # Run detection
+    print("detecting objects...")
+    start_time = time()
+    results = model.detect([image], verbose=1)
+    end_time = time()
+    secs_elapsed = end_time - start_time
+    print("detection took {:0.2f} seconds.".format(secs_elapsed))
+
+    # Visualize results
+    r = results[0]
+    visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
+                                class_names, r['scores'])
+
+    print("rois (shape={}): {}".format(r['rois'].shape, r['rois']))
+    print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
+    print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
+    print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
+    print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
+
     # use_reloader on makes us load the model twice (this is slow and bad)
     app.run(debug = True, use_reloader=False, host="0.0.0.0", port=80) # port 80 means sudo only :/
 '''
