@@ -117,6 +117,8 @@ def upload_file():
     print("/uploader called")
     if request.method == 'POST':
         print("request.files:", request.files)
+        if not 'file'  in request.files:
+            return jsonify({"error":"no file supplied"})
         f = request.files['file']
         rand_uuid = uuid.uuid4().hex
         ofname = path.join(USER_IMG_DIR, rand_uuid + "_" + secure_filename(f.filename))
