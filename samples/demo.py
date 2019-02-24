@@ -149,12 +149,7 @@ def upload_file():
 
         get_masks(ofname)
         return 'file uploaded successfully'
-		
-@app.before_first_request
-def load_global_data():
-    model = build_model()
-    global graph
-    graph = tf.get_default_graph() 
+
 
 if __name__ == '__main__':
     model = build_model()
