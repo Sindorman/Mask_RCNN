@@ -9,6 +9,8 @@
       <input name="file" type="file" id="goodFileInputter">
   </fieldset>
   <fieldset>
+      <p> Click on the object you would like to remove</p>
+      <span>Then click this button: -----></span>
       <button id="upload-file-btn" type="button">Make disappear</button>
   </fieldset>
 </form>
@@ -136,9 +138,9 @@ function storeCanvasClick(event) {
     };*/
     var svg = document.getElementById('svg_mouse_indicator');
     var x = event.offsetX + rect.left - 70/2;
-    var y = event.offsetY + rect.top - 70/2;
+    var y = event.offsetY + rect.top - 70/2 ;
     svg.style.left = x;
-    svg.style.top = y;
+    svg.style.top = y + $(window).scrollTop();
     
     console.log("x coords: " + canvas_click_coord_x + ", y coords: " + canvas_click_coord_y);
 }
