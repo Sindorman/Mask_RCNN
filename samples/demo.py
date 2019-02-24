@@ -23,7 +23,8 @@ from werkzeug import secure_filename
 from scipy.ndimage.morphology import binary_dilation
 
 from flask import after_this_request, request
-from cStringIO import StringIO as IO
+#from cStringIO import StringIO as IO
+from io import StringIO as IO
 import gzip
 import functools 
 
