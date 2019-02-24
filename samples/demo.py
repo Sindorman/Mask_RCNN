@@ -4,6 +4,8 @@ import os
 import sys
 import random
 import math
+from time import time
+
 import numpy as np
 import skimage.io
 import matplotlib
@@ -32,9 +34,6 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 if not os.path.exists(COCO_MODEL_PATH):
     utils.download_trained_weights(COCO_MODEL_PATH)
 
-
-
-
 # Directory of images to run detection on
 IMAGE_DIR = os.path.join(ROOT_DIR, "images")
 
@@ -52,6 +51,7 @@ config.display()
 model = modellib.MaskRCNN(mode="inference", model_dir=MODEL_DIR, config=config)
 
 # Load weights trained on MS-COCO
+print("Loading weights for model...")
 model.load_weights(COCO_MODEL_PATH, by_name=True)
 
 
@@ -81,7 +81,12 @@ file_names = next(os.walk(IMAGE_DIR))[2]
 image = skimage.io.imread(os.path.join(IMAGE_DIR, random.choice(file_names)))
 
 # Run detection
+print("detecting objects...")
+start_time = time()
 results = model.detect([image], verbose=1)
+end_time = time()
+secs_elapsed = end_time - start_time
+print("detection took {:0.2f} seconds.".format(secs_elapsed))
 
 # Visualize results
 r = results[0]
@@ -93,3 +98,4 @@ print("masks (shape={}): {}".format(r['masks'].shape, r['masks']))
 print("class_ids (shape={}): {}".format(r['class_ids'].shape, r['class_ids']))
 print("scores (shape={}): {}".format(r['scores'].shape, r['scores']))
 print("STATIC class_names (len={}): {}".format(len(class_names), class_names))
+
