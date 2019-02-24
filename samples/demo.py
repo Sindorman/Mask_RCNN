@@ -123,12 +123,14 @@ def upload_file():
         f.save(ofname)
 
         rois, masks, class_ids, scores, class_names = get_masks(ofname)
+        masks = masks.astype(int)
+        print("masks final shape (before tolist():", masks.shape)
         ret_dict = {
             'rois': rois.tolist(),
             'masks':masks.tolist(),
             'class_ids':class_ids.tolist(),
             'scores':scores.tolist(),
-            'class_names': class_names.tolist()
+            'class_names': class_names
         }
         return jsonify(ret_dict)
 
